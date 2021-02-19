@@ -4,6 +4,10 @@
         <title>d3.js data driven page</title>
         <script src="https://d3js.org/d3.v6.min.js"></script>
         <style>
+            th {
+                color: blue;
+            }
+
             .name {
                 color: red;
                 border: solid black 1pt;
@@ -38,6 +42,13 @@
             d3.csv(csv_url,
             (d,i,c) => {
                 if (i>10) return d
+                if (i==0) {
+                    d3.select("table")
+                        .append("tr")
+                        .selectAll("th")
+                        .data(c).enter()
+                        .append("th").text(e => e)
+                }
                 d3.select("table")
                 .append("tr")
                 .selectAll("td")

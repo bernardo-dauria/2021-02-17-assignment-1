@@ -4,6 +4,11 @@
         <title>d3.js data driven page</title>
         <script src="https://d3js.org/d3.v6.min.js"></script>
         <style>
+            .name {
+                color: red;
+                border: solid black 1pt;
+            }
+
             .date {
                 color: green;
             }
@@ -34,7 +39,7 @@
                 .selectAll("td")
                 .data(c).enter()
                 .append("td").text(e => d[e])
-                .classed("date", e => e == "date")
+                .attr("class", e => e)
             })
 
             function colorP() {

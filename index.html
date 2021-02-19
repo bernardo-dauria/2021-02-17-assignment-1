@@ -76,8 +76,7 @@
                 dates = Array.from(new Set(d.map(e => e.date)));
                 dateSelector(dates);
 
-                makeHeader(d);
-                updateTable(d);
+                updateSelect()
             }
 
             function dateSelector(d) {
@@ -88,12 +87,20 @@
                 .text("Choose a date: ");
                 htmlNode.append("select")
                 .attr("id", "dates")
+                .on("change", d => updateSelect(d))
                 .selectAll("option")
                 .data(d).enter()
                 .append("option")
                 .attr("value", e => e)
                 .text(e => e.slice(0,4));
             }
+
+            function updateSelect(e) {
+                val = d3.select("select").node().value
+                fdata = d3.filter(data, d => d.date == val)
+                updateTable(fdata)
+                updateChart(fdata)
+            }  
 
             function colorP() {
                 d3.selectAll("p").style("color", "red");

@@ -32,6 +32,8 @@
             This page is inspired by the 
             <a href="https://observablehq.com/@d3/bar-chart-race" target="_blank"><b>Bar Chart Race</b></a>
             <button onclick="colorP()">Click me</button>
+
+            <div id="dateSelector"></div>
             <table></table>
 
 
@@ -61,7 +63,29 @@
                 .data(c).enter()
                 .append("td").text(e => d[e])
                 .attr("class", e => e)
-            })
+            }).then(tidying)
+
+            var data;
+            function tidying(d) {
+                data = d;
+                dates = Array.from(new Set(d.map(e => e.date)));
+                dateSelector(dates);
+            }
+
+            function dateSelector(d) {
+                d.sort((a,b) => d3.ascending(a.date, b.date));    
+                htmlNode = d3.select("#dateSelector");
+                htmlNode.append("label")
+                .attr("for", "dates")
+                .text("Choose a date: ");
+                htmlNode.append("select")
+                .attr("id", "dates")
+                .selectAll("option")
+                .data(d).enter()
+                .append("option")
+                .attr("value", e => e)
+                .text(e => e.slice(0,4));
+            }
 
             function colorP() {
                 d3.selectAll("p").style("color", "red");

@@ -38,7 +38,13 @@
         </p>
 
         <script>
-            csv_url = false ? "category-brands.csv" : "https://raw.githubusercontent.com/bernardo-dauria/2021-02-10-example/main/category-brands.csv"
+            csv_url = false ? "category-brands.csv" : "https://raw.githubusercontent.com/bernardo-dauria/2021-02-10-example/main/category-brands.csv";
+            cs = {
+                    "date": "fecha",
+                    "name": "nombre",
+                    "category": "categoria",
+                    "value": "valor"
+                };
             d3.csv(csv_url,
             (d,i,c) => {
                 if (i>10) return d
@@ -47,7 +53,7 @@
                         .append("tr")
                         .selectAll("th")
                         .data(c).enter()
-                        .append("th").text(e => e)
+                        .append("th").text(e => cs[e])
                 }
                 d3.select("table")
                 .append("tr")

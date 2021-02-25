@@ -4,148 +4,24 @@
         <title>d3.js data driven page</title>
         <script src="https://d3js.org/d3.v6.min.js"></script>
         <style>
-
-            #myCanvas {
-                background-color: yellow;
-            }
-
-            th {
+            .selected {
                 color: blue;
-            }
-
-            .name {
-                color: red;
-                border: solid black 1pt;
-            }
-
-            .name:hover {
-                border-width: 2pt;
-            }
-
-            .date {
-                color: green;
-            }
-            .date:hover
-            {
-                font-weight: bold;
+                fill: blue;
             }
         </style>
     </head>
 
     <body>
         <p>
-            This page is inspired by the 
-            <a href="https://observablehq.com/@d3/bar-chart-race" target="_blank"><b>Bar Chart Race</b></a>
-            <button onclick="colorP()">Click me</button>
-
-            <div id="dateSelector"></div>
+            <label for="n_rows">Number of rows:  <select id="n_rows"></select> </label>
+            <br>
+            <label for="dates">Choose a date:  <select id="dates"></select> </label>
             <svg id="myCanvas" style="width:100%; height: 200px;"></svg>
             <table><thead></thead><tbody></tbody></table>
         </p>
 
         <script>
-            csv_url = false ? "category-brands.csv" : "https://raw.githubusercontent.com/bernardo-dauria/2021-02-10-example/main/category-brands.csv";
-            cs = {
-                    "date": "fecha",
-                    "name": "nombre",
-                    "category": "categoria",
-                    "value": "valor"
-                };
-            d3.csv(csv_url).then(tidying)
-
-            function updateTable(d) {
-                d3.select("table tbody")
-                    .selectAll("tr")
-                    .data(d)
-                    .join("tr")
-                    .selectAll("td")
-                    .data(e => columns.map(x => e[x]))
-                    .join("td")
-                        .text(x => x);
-            }
-
-            function makeHeader(d) {
-                d3.select("table thead").selectAll("tr").remove()
-
-                d3.select("table thead")
-                    .append("tr")
-                    .selectAll("th")
-                    .data(columns)
-                    .join("th").text(e => e)
-            }
-
-            var data, columns, maxValue;
-            function tidying(d) {
-                data = d;
-                columns = d.columns;
-                maxValue = d3.reduce(d, (p, v) => Math.max(p,v.value) , 0)
-
-                dates = Array.from(new Set(d.map(e => e.date)));
-                dateSelector(dates);
-
-                updateSelect()
-            }
-
-            function dateSelector(d) {
-                d.sort((a,b) => d3.ascending(a.date, b.date));    
-                htmlNode = d3.select("#dateSelector");
-                htmlNode.append("label")
-                .attr("for", "dates")
-                .text("Choose a date: ");
-                htmlNode.append("select")
-                .attr("id", "dates")
-                .on("change", d => updateSelect(d))
-                .selectAll("option")
-                .data(d).enter()
-                .append("option")
-                .attr("value", e => e)
-                .text(e => e.slice(0,4));
-            }
-
-            function updateSelect(e) {
-                val = d3.select("select").node().value
-                fdata = d3.filter(data, d => d.date == val)
-                updateTable(fdata)
-                updateChart(fdata)
-                updateChart(fdata)
-            }  
-
-            function updateChart(data) {
-                svg =  d3.select("#myCanvas");
-                w = svg.node().width.baseVal.value;
-                h = svg.node().height.baseVal.value;
-
-                x = d3.scaleLinear([0, data.length], [0, w])
-                y = d3.scaleLinear([0, maxValue], [0,h])
-                cat = new Set(d3.map(data, d => d.category))
-                color = d3.scaleOrdinal(cat, d3.schemeTableau10)
-
-                svgBind = svg.text("")
-                    .selectAll("rect")
-                    .data(data)
-
-                svgBind.enter()
-                    .append('rect')
-                    .attr('x', (d , i) => x(i))
-                    .attr('y', d => y(maxValue - d.value))
-                    .attr('height', d => y(d.value))
-                    .attr('width', x(1)*0.95)
-                    .attr('fill', d => color(d.category))
-
-                svgBind.enter()
-                    .append("text")
-                    .attr('x', 0)
-                    .attr('y', 0)
-                    .attr('transform', 
-                          (d , i) => 'translate(' + x(i+0.5) +
-                            ',' + y(maxValue - d.value - 5000)+'),' 
-                            + 'rotate(-90)')
-                    .text(d => d.name);
-            }
-
-            function colorP() {
-                d3.selectAll("p").style("color", "red");
-            }
+            csv_url=false?"category-brands.csv":"https://raw.githubusercontent.com/bernardo-dauria/2021-02-10-example/main/category-brands.csv";d3.csv(csv_url).then(c);var t,e,n,a;function c(a){t=a;e=a.columns;n=d3.reduce(a,(t,e)=>Math.max(t,e.value),0);r();l();dates=Array.from(new Set(a.map(t=>t.date)));s(dates);i()}function l(){d3.select("table thead").selectAll("tr").remove();d3.select("table thead").append("tr").selectAll("th").data(e).join("th").text(t=>t)}function o(t){d3.select("table tbody").selectAll("tr").data(t).join("tr").attr("data-x",t=>t.name).classed("selected",t=>t.name==a).selectAll("td").data(t=>e.map(e=>t[e])).join("td").text(t=>t).on("click",d)}function d(t){a=t.target.parentNode.dataset.x;i()}function s(t){t.sort((t,e)=>d3.ascending(t.date,e.date));htmlNode=d3.select("#dates").on("change",i).selectAll("option").data(t).enter().append("option").attr("value",t=>t).text(t=>t.slice(0,4))}function r(){d3.select("#n_rows").on("change",i).selectAll("option").data([10,20,30,0]).enter().append("option").attr("value",t=>t).text(t=>t?t:"All")}function i(e){var n=d3.select("#dates").node().value;var a=parseInt(d3.select("#n_rows").node().value);var c=d3.filter(t,t=>t.date==n);var c=a?c.slice(0,a):c;o(c);u(c)}function u(t){svg=d3.select("#myCanvas");w=svg.node().width.baseVal.value;h=svg.node().height.baseVal.value;x=d3.scaleLinear([0,t.length],[0,w]);y=d3.scaleLinear([0,n],[0,h]);cat=new Set(d3.map(t,t=>t.category));color=d3.scaleOrdinal(cat,d3.schemeTableau10);svgBind=svg.text("").selectAll("rect").data(t);svgBind.enter().append("rect").attr("x",(t,e)=>x(e)).attr("y",t=>y(n-t.value)).attr("height",t=>y(t.value)).attr("width",.95*x(1)).style("fill",t=>t.name==a?"":color(t.category)).classed("selected",t=>t.name==a);svgBind.enter().append("text").attr("x",0).attr("y",0).attr("transform",(t,e)=>"translate("+x(e+.5)+","+y(n-t.value-5e3)+"),"+"rotate(-90)").text(t=>t.name).classed("selected",t=>t.name==a)}
         </script>
     </body>
 </html>
